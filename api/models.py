@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 class BaseCarFields(models.Model):
     ENGINE_CHOICES = [
@@ -54,7 +55,6 @@ class Car(BaseCarFields):
     STATUS_CHOICES = [
         ('available', 'Available'),
         ('reserved', 'Reserved'),
-        ('used', 'Used'),
         ('new', 'New'),
     ]
     transmission = models.CharField(max_length=50)
@@ -62,18 +62,31 @@ class Car(BaseCarFields):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = "Car"
+        verbose_name_plural = "Cars"
+
     def __str__(self):
         return f"{self.name} - {self.make} {self.model} ({self.year})"
 
 class CarImage(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to='car_images/')
+    image = CloudinaryField('image')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Car Image"
+        verbose_name_plural = "Car Images"
 
     def __str__(self):
         return f"Image for {self.car.make} {self.car.model}"
 
 class Enquiry(BaseEnquiryFields):
+
+    class Meta:
+        verbose_name = "General Enquiry"
+        verbose_name_plural = "General Enquiries"
+
     def __str__(self):
         return f"Enquiry from {self.full_name} - {self.subject or 'No Subject'}"
 
@@ -95,6 +108,10 @@ class CarEnquiry(models.Model):
     message = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = "Car Enquiry"
+        verbose_name_plural = "Car Enquiries"
+
     def __str__(self):
         return f"Car Enquiry from {self.full_name} about {self.vehicle_of_interest}"
 
@@ -104,6 +121,11 @@ class MasterclassEnquiry(models.Model):
     phone = models.CharField(max_length=20)
     message = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+    class Meta:
+        verbose_name = "Masterclass Enquiry"
+        verbose_name_plural = "Masterclass Enquiries"
 
     def __str__(self):
         return f"Masterclass Enquiry - {self.full_name}"
