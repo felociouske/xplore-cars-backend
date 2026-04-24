@@ -1,15 +1,18 @@
 from rest_framework import viewsets, filters
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Car, CarImage, Enquiry, CarEnquiry, MasterclassEnquiry
+from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial
 from .serializers import (
     CarSerializer, CarImageSerializer,
-    EnquirySerializer, CarEnquirySerializer, MasterclassEnquirySerializer
+    CarEnquirySerializer, ContactEnquirySerializer,
+    TestimonialSerializer,
 )
+
 
 class CarViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Car.objects.all().order_by('-created_at')
     serializer_class = CarSerializer
-
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['engine_type', 'status', 'year']
     search_fields = ['make', 'model', 'color', 'description']
@@ -19,27 +22,46 @@ class CarViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = super().get_queryset()
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
-
         if min_price:
             queryset = queryset.filter(price__gte=min_price)
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
         return queryset
 
+
 class CarImageViewSet(viewsets.ModelViewSet):
     queryset = CarImage.objects.all()
     serializer_class = CarImageSerializer
 
 
-class EnquiryViewSet(viewsets.ModelViewSet):
-    queryset = Enquiry.objects.all().order_by('-created_at')
-    serializer_class = EnquirySerializer
-    http_method_names = ['post', 'get', 'head'] 
-
 class CarEnquiryViewSet(viewsets.ModelViewSet):
     queryset = CarEnquiry.objects.all().order_by('-created_at')
     serializer_class = CarEnquirySerializer
+    http_method_names = ['post', 'get', 'head']
 
-class MasterclassEnquiryCreateView(viewsets.ModelViewSet):
-    queryset = MasterclassEnquiry.objects.all()
-    serializer_class = MasterclassEnquirySerializer
+
+class ContactEnquiryViewSet(viewsets.ModelViewSet):
+    queryset = ContactEnquiry.objects.all().order_by('-created_at')
+    serializer_class = ContactEnquirySerializer
+    http_method_names = ['post', 'get', 'head']
+
+
+class TestimonialViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = TestimonialSerializer
+    queryset = Testimonial.objects.order_by('display_order', '-created_at')
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        show_homepage = self.request.query_params.get('homepage')
+        featured = self.request.query_params.get('featured')
+        if show_homepage:
+            queryset = queryset.filter(show_on_homepage=True)
+        if featured:
+            queryset = queryset.filter(featured=True)
+        return queryset
+
+    @action(detail=False, methods=['get'], url_path='homepage')
+    def homepage_testimonials(self, request):
+        testimonials = self.get_queryset().filter(show_on_homepage=True)
+        serializer = self.get_serializer(testimonials, many=True)
+        return Response(serializer.data)

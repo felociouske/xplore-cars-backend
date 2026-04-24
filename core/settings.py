@@ -12,13 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "fallback-secret")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
-ALLOWED_HOSTS = [
-    '127.0.0.1'
-]
 
 INSTALLED_APPS = [
-    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -30,6 +27,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'cloudinary',
     'cloudinary_storage',
+    'markdownx',
     'api',
 ]
 
@@ -68,14 +66,20 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.environ.get('DATABASE_URL'),
+#         conn_max_age=600,
+#         ssl_require=True
+#     )
+# }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+} 
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -96,9 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Africa/Nairobi'
@@ -108,15 +109,10 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -127,12 +123,19 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+CORS_ALLOW_CREDENTIALS = False
+
 CSRF_TRUSTED_ORIGINS = [
     "https://admin.xplorecars.cc",
     "https://xplorecars.cc",
     "https://www.xplorecars.cc",
     "https://car-imports-production.up.railway.app",
 ]
+
+
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
@@ -156,51 +159,3 @@ REST_FRAMEWORK = {
 }
 
 
-
-JAZZMIN_SETTINGS = {
-    "site_title": "Xplore Car Imports Admin",
-    "site_header": "Xplore Admin",
-    "site_brand": "Xplore Imports",
-    "welcome_sign": "Welcome to Xplore Car Imports Dashboard",
-    "site_logo": "images/logo.jpg",
-    "custom_css": "css/admin-custom.css",
-    "site_logo_classes": "brand-image",
-    "copyright": "Xplore Car Imports © 2025",
-
-    # Top menu (simple version)
-    "topmenu_links": [
-        {"name": "Home", "url": "/"},
-        {"model": "auth.user"},
-        {"app": "orders"},
-    ],
-
-    "show_sidebar": True,
-    "navigation_expanded": True,
-
-    # Colors
-    "colors": {
-        "accent": "#10B981",
-        "accent_dark": "#047857",
-        "primary": "#065F46",
-        "secondary": "#6EE7B7",
-        "link": "#059669",
-        "hover": "#34D399",
-        "bg": "#F9FAFB",
-        "success": "#10B981",
-        "warning": "#FBBF24",
-        "danger": "#EF4444",
-        "info": "#3B82F6",
-    },
-
-    # Buttons
-    "button_classes": {
-        "primary": "btn btn-success rounded-md px-4 py-2 shadow-md hover:shadow-lg",
-        "secondary": "btn btn-outline-success rounded-md px-4 py-2",
-        "warning": "btn btn-warning rounded-md px-4 py-2",
-        "danger": "btn btn-danger rounded-md px-4 py-2",
-        "info": "btn btn-info rounded-md px-4 py-2",
-    },
-
-    "changeform_format": "horizontal_tabs",
-    "changeform_format_overrides": {},
-}

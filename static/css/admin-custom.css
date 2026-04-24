@@ -1,0 +1,23 @@
+.brand-image {
+  width: 70px !important;       
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+
+.login-logo img {
+  width: 120px !important;    
+  height: auto !important;
+  object-fit: contain;
+  border-radius: 10px;
+  margin: 0 auto;
+  display: block;
+}
+
+.login-logo {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
