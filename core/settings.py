@@ -6,16 +6,25 @@ import os
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "fallback-secret")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+# =====================
+# CORE SECURITY
+# =====================
+SECRET_KEY = config('DJANGO_SECRET_KEY')
+DEBUG = config('DEBUG', default='False') == 'True'
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
+# Automatically include Railway's internal URL if present
+RAILWAY_STATIC_URL = os.getenv('RAILWAY_STATIC_URL', '')
+if RAILWAY_STATIC_URL:
+    ALLOWED_HOSTS.append(RAILWAY_STATIC_URL)
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
-
+# =====================
+# INSTALLED APPS
+# =====================
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -31,10 +40,13 @@ INSTALLED_APPS = [
     'api',
 ]
 
+# =====================
+# MIDDLEWARE
+# =====================
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -62,93 +74,74 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# =====================
+# DATABASE
+# =====================
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=config('DATABASE_URL'),
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=True,
     )
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# } 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
+# =====================
+# PASSWORD VALIDATION
+# =====================
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
+# =====================
+# LOCALISATION
+# =====================
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Africa/Nairobi'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
+# =====================
+# STATIC FILES
+# =====================
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# =====================
+# CORS & CSRF
+# =====================
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS',
+    default='https://xplorecars.cc,https://www.xplorecars.cc'
+).split(',')
 
-CORS_ALLOWED_ORIGINS = [
-    "https://xplorecars.cc",
-    "https://www.xplorecars.cc",
-    "https://web-production-95c0c.up.railway.app"
-]
-
-
-CORS_ALLOW_ALL_ORIGINS = True
-
-
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = False
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://admin.xplorecars.cc",
-    "https://xplorecars.cc",
-    "https://www.xplorecars.cc",
-    "https://web-production-95c0c.up.railway.app",
-]
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='https://xplorecars.cc,https://www.xplorecars.cc'
+).split(',')
 
-
-
+# =====================
+# CLOUDINARY
+# =====================
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': config('CLOUDINARY_API_KEY'),
     'API_SECRET': config('CLOUDINARY_API_SECRET'),
 }
-# Use Cloudinary for default file storage (media files)
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-
+# =====================
+# REST FRAMEWORK
+# =====================
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -159,4 +152,48 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+# =====================
+# JAZZMIN ADMIN THEME
+# =====================
+JAZZMIN_SETTINGS = {
+    'site_title': config('JAZZMIN_SITE_TITLE', default='Xplore Car Imports Admin'),
+    'site_header': config('JAZZMIN_SITE_HEADER', default='Xplore Admin'),
+    'site_brand': config('JAZZMIN_SITE_BRAND', default='Xplore Imports'),
+    'welcome_sign': 'Welcome to Xplore Car Imports Dashboard',
+    'site_logo': 'images/logo.jpg',
+    'custom_css': 'css/admin-custom.css',
+    'site_logo_classes': 'brand-image',
+    'copyright': 'Xplore Car Imports © 2025',
 
+    'topmenu_links': [
+        {'name': 'Home', 'url': '/'},
+        {'model': 'auth.user'},
+    ],
+
+    'show_sidebar': True,
+    'navigation_expanded': True,
+
+    'colors': {
+        'accent': '#10B981',
+        'accent_dark': '#047857',
+        'primary': '#065F46',
+        'secondary': '#6EE7B7',
+        'link': '#059669',
+        'hover': '#34D399',
+        'bg': '#F9FAFB',
+        'success': '#10B981',
+        'warning': '#FBBF24',
+        'danger': '#EF4444',
+        'info': '#3B82F6',
+    },
+
+    'button_classes': {
+        'primary': 'btn btn-success rounded-md px-4 py-2 shadow-md hover:shadow-lg',
+        'secondary': 'btn btn-outline-success rounded-md px-4 py-2',
+        'warning': 'btn btn-warning rounded-md px-4 py-2',
+        'danger': 'btn btn-danger rounded-md px-4 py-2',
+        'info': 'btn btn-info rounded-md px-4 py-2',
+    },
+
+    'changeform_format': 'horizontal_tabs',
+}
