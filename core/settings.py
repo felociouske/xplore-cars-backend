@@ -120,6 +120,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "https://xplorecars.cc",
     "https://www.xplorecars.cc",
+    "https://web-production-95c0c.up.railway.app"
 ]
 
 
@@ -132,7 +133,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://admin.xplorecars.cc",
     "https://xplorecars.cc",
     "https://www.xplorecars.cc",
-    "https://car-imports-production.up.railway.app",
+    "https://web-production-95c0c.up.railway.app",
 ]
 
 
