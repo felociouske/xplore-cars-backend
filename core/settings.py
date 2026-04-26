@@ -116,18 +116,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # =====================
 # CORS & CSRF
 # =====================
-CORS_ALLOWED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS',
-    default='https://xplorecars.cc,https://www.xplorecars.cc'
-).split(',')
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in config(
+        'CORS_ALLOWED_ORIGINS',
+        default='https://xplorecars.cc,https://www.xplorecars.cc,http://localhost:8080'
+    ).split(',')
+]
 
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = config(
-    'CSRF_TRUSTED_ORIGINS',
-    default='https://xplorecars.cc,https://www.xplorecars.cc'
-).split(',')
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in config(
+        'CSRF_TRUSTED_ORIGINS',
+        default='https://xplorecars.cc,https://www.xplorecars.cc,http://localhost:8080'
+    ).split(',')
+]
 
 # =====================
 # CLOUDINARY

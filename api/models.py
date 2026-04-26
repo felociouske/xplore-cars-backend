@@ -26,14 +26,17 @@ class Car(models.Model):
         ('reserved', 'Reserved'),
         ('new', 'New'),
     ]
-
-    # Required — minimum to identify and list a car
+ 
+    # Required
     make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     year = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-
-    # Optional — fill in when details are available
+ 
+    # Price range — use price_from as the base, price_to as upper limit
+    price_from = models.DecimalField(max_digits=10, decimal_places=2)
+    price_to = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+ 
+    # Optional
     name = models.CharField(max_length=100, blank=True, null=True)
     grade = models.CharField(max_length=3, choices=GRADE_CHOICES, blank=True, null=True)
     engine_type = models.CharField(max_length=10, choices=ENGINE_CHOICES, blank=True, null=True)
@@ -44,14 +47,21 @@ class Car(models.Model):
     description = MarkdownxField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
-
+ 
     class Meta:
         verbose_name = "Car"
         verbose_name_plural = "Cars"
         ordering = ['-created_at']
-
+ 
     def __str__(self):
         return f"{self.make} {self.model} ({self.year})"
+ 
+    def price_display(self):
+        """Returns formatted price range string e.g. KES 954,000 - 1,500,000"""
+        base = f"KES {int(self.price_from):,}"
+        if self.price_to:
+            return f"{base} - {int(self.price_to):,}"
+        return base
 
 
 class CarImage(models.Model):

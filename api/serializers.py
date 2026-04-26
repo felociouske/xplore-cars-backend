@@ -12,14 +12,18 @@ class CarImageSerializer(serializers.ModelSerializer):
 
 class CarSerializer(serializers.ModelSerializer):
     images = CarImageSerializer(many=True, read_only=True)
+    price_display = serializers.SerializerMethodField()
 
     class Meta:
         model = Car
         fields = [
             'id', 'name', 'make', 'model', 'year', 'grade', 'engine_type',
-            'mileage', 'price', 'color', 'description', 'transmission',
-            'features', 'status', 'created_at', 'images'
+            'mileage', 'price_from', 'price_to', 'price_display', 'color',
+            'description', 'transmission', 'features', 'status', 'created_at', 'images'
         ]
+
+    def get_price_display(self, obj):
+        return obj.price_display()
 
 
 class CarEnquirySerializer(serializers.ModelSerializer):

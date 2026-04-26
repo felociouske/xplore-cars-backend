@@ -10,7 +10,7 @@ class CarImageInline(admin.TabularInline):
 
 @admin.register(Car)
 class CarAdmin(MarkdownxModelAdmin):
-    list_display = ('make', 'model', 'year', 'price', 'status', 'created_at')
+    list_display = ('make', 'model', 'year', 'price_from', 'price_to', 'status', 'created_at')
     search_fields = ('name', 'make', 'model')
     list_filter = ('status', 'make', 'year', 'engine_type')
     inlines = [CarImageInline]
