@@ -26,18 +26,46 @@ class Car(models.Model):
         ('reserved', 'Reserved'),
         ('new', 'New'),
     ]
- 
+    BODY_TYPE_CHOICES = [
+        ('hatchback', 'Hatchback'),
+        ('sedan', 'Sedan'),
+        ('suv', 'SUV'),
+        ('crossover', 'Crossover'),
+        ('wagon', 'Wagon'),
+        ('minivan', 'Minivan'),
+        ('pickup', 'Pickup'),
+        ('coupe', 'Coupe'),
+        ('convertible', 'Convertible'),
+        ('van', 'Van'),
+    ]
+    IMPORT_TYPE_CHOICES = [
+        ('japan_import', 'Japan Import'),
+        ('local', 'Local'),
+        ('uk_import', 'UK Import'),
+    ]
+    DRIVE_CHOICES = [
+        ('rhd', 'Right Hand Drive'),
+        ('lhd', 'Left Hand Drive'),
+    ]
+
     # Required
     make = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     year = models.PositiveIntegerField()
- 
+
     # Price range — use price_from as the base, price_to as upper limit
     price_from = models.DecimalField(max_digits=10, decimal_places=2)
     price_to = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
- 
+
     # Optional
     name = models.CharField(max_length=100, blank=True, null=True)
+    body_type = models.CharField(max_length=20, choices=BODY_TYPE_CHOICES, blank=True, null=True)
+    import_type = models.CharField(max_length=20, choices=IMPORT_TYPE_CHOICES, default='japan_import')
+    drive_side = models.CharField(max_length=3, choices=DRIVE_CHOICES, default='rhd')
+    trim_levels = models.CharField(
+        max_length=255, blank=True, null=True,
+        help_text="Comma-separated trim levels e.g. X, G, Moda, TRD Sportivo"
+    )
     grade = models.CharField(max_length=3, choices=GRADE_CHOICES, blank=True, null=True)
     engine_type = models.CharField(max_length=10, choices=ENGINE_CHOICES, blank=True, null=True)
     mileage = models.PositiveIntegerField(blank=True, null=True)

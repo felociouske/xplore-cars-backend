@@ -10,10 +10,38 @@ class CarImageInline(admin.TabularInline):
 
 @admin.register(Car)
 class CarAdmin(MarkdownxModelAdmin):
-    list_display = ('make', 'model', 'year', 'price_from', 'price_to', 'status', 'created_at')
+    list_display = ('make', 'model', 'year', 'body_type', 'price_from', 'price_to', 'status', 'created_at')
     search_fields = ('name', 'make', 'model')
-    list_filter = ('status', 'make', 'year', 'engine_type')
+    list_filter = ('status', 'make', 'year', 'engine_type', 'body_type', 'import_type')
     inlines = [CarImageInline]
+
+    fieldsets = (
+        ('Identity', {
+            'fields': (
+                ('make', 'model', 'year'),
+                'name',
+                ('body_type', 'import_type', 'drive_side'),
+            )
+        }),
+        ('Trim & Variants', {
+            'fields': ('trim_levels',),
+            'description': 'Enter comma-separated trim levels e.g. X, G, Moda, TRD Sportivo'
+        }),
+        ('Pricing', {
+            'fields': (('price_from', 'price_to'),),
+            'description': 'Price varies by trim, mileage, grading and year. Enter the full expected range.'
+        }),
+        ('Specifications', {
+            'fields': (
+                ('engine_type', 'transmission'),
+                ('mileage', 'grade', 'color'),
+                'status',
+            )
+        }),
+        ('Content', {
+            'fields': ('features', 'description'),
+        }),
+    )
 
 
 @admin.register(CarEnquiry)
