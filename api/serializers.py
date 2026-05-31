@@ -3,11 +3,19 @@ from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial
 
 
 class CarImageSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(use_url=True)
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = CarImage
         fields = ['id', 'image']
+
+    def get_image(self, obj):
+        try:
+            if obj.image and hasattr(obj.image, 'url'):
+                return obj.image.url
+        except Exception:
+            return None
+        return str(obj.image) if obj.image and isinstance(obj.image, str) else None
 
 
 class CarSerializer(serializers.ModelSerializer):
@@ -18,9 +26,8 @@ class CarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
         fields = [
-            'id', 'name', 'make', 'model', 'year', 'grade', 'engine_type',
-            'mileage', 'price_from', 'price_to', 'price_display', 'color',
-            'description', 'transmission', 'features', 'status', 'created_at',
+            'id', 'name', 'price_from', 'price_to', 'price_display',
+            'description', 'features', 'created_at',
             'images', 'body_type', 'import_type', 'drive_side', 'trim_levels',
             'trim_levels_list',
         ]

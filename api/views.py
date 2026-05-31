@@ -14,18 +14,18 @@ class CarViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Car.objects.all().order_by('-created_at')
     serializer_class = CarSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['engine_type', 'status', 'year']
-    search_fields = ['make', 'model', 'color', 'description']
-    ordering_fields = ['price', 'year', 'mileage', 'created_at']
+    filterset_fields = ['body_type', 'import_type', 'drive_side']
+    search_fields = ['name', 'description', 'features', 'body_type', 'import_type']
+    ordering_fields = ['price_from', 'price_to', 'created_at']
 
     def get_queryset(self):
         queryset = super().get_queryset()
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
         if min_price:
-            queryset = queryset.filter(price__gte=min_price)
+            queryset = queryset.filter(price_from__gte=min_price)
         if max_price:
-            queryset = queryset.filter(price__lte=max_price)
+            queryset = queryset.filter(price_from__lte=max_price)
         return queryset
 
 

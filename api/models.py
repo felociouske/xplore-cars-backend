@@ -6,12 +6,6 @@ from urllib.parse import urlparse, parse_qs
 
 
 class Car(models.Model):
-    ENGINE_CHOICES = [
-        ('petrol', 'Petrol'),
-        ('diesel', 'Diesel'),
-        ('electric', 'Electric'),
-        ('hybrid', 'Hybrid'),
-    ]
     GRADE_CHOICES = [
         ('6', '6'),
         ('5', '5'),
@@ -41,17 +35,11 @@ class Car(models.Model):
     IMPORT_TYPE_CHOICES = [
         ('japan_import', 'Japan Import'),
         ('local', 'Local'),
-        ('uk_import', 'UK Import'),
     ]
     DRIVE_CHOICES = [
         ('rhd', 'Right Hand Drive'),
         ('lhd', 'Left Hand Drive'),
     ]
-
-    # Required
-    make = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-    year = models.PositiveIntegerField()
 
     # Price range — use price_from as the base, price_to as upper limit
     price_from = models.DecimalField(max_digits=10, decimal_places=2)
@@ -66,14 +54,8 @@ class Car(models.Model):
         max_length=255, blank=True, null=True,
         help_text="Comma-separated trim levels e.g. X, G, Moda, TRD Sportivo"
     )
-    grade = models.CharField(max_length=3, choices=GRADE_CHOICES, blank=True, null=True)
-    engine_type = models.CharField(max_length=10, choices=ENGINE_CHOICES, blank=True, null=True)
-    mileage = models.PositiveIntegerField(blank=True, null=True)
-    color = models.CharField(max_length=50, blank=True, null=True)
-    transmission = models.CharField(max_length=50, blank=True, null=True)
     features = models.TextField(blank=True, null=True)
     description = MarkdownxField(blank=True, null=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
  
     class Meta:
@@ -81,8 +63,6 @@ class Car(models.Model):
         verbose_name_plural = "Cars"
         ordering = ['-created_at']
  
-    def __str__(self):
-        return f"{self.make} {self.model} ({self.year})"
  
     def price_display(self):
         """Returns formatted price range string e.g. KES 954,000 - 1,500,000"""
@@ -102,7 +82,7 @@ class CarImage(models.Model):
         verbose_name_plural = "Car Images"
 
     def __str__(self):
-        return f"Image for {self.car.make} {self.car.model}"
+        return f"Image for {self.car.name or f'Car #{self.car.id}'}"
 
 
 class CarEnquiry(models.Model):
