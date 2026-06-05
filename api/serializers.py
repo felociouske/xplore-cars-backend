@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial
+from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial, BlogPost
 
 
 class CarImageSerializer(serializers.ModelSerializer):
@@ -67,3 +67,34 @@ class TestimonialSerializer(serializers.ModelSerializer):
 
     def get_youtube_embed_url(self, obj):
         return obj.youtube_embed_url()
+
+
+class BlogPostSerializer(serializers.ModelSerializer):
+    author_name = serializers.SerializerMethodField()
+    youtube_embed_url = serializers.SerializerMethodField()
+    cover_image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BlogPost
+        fields = [
+            'id', 'title', 'slug', 'subtitle', 'cover_image_url',
+            'content', 'author_name', 'youtube_url', 'youtube_id',
+            'youtube_embed_url', 'is_published', 'published_at', 'created_at',
+        ]
+
+    def get_author_name(self, obj):
+        if obj.author:
+            full_name = obj.author.get_full_name()
+            return full_name if full_name else obj.author.username
+        return "Xplore Imports"
+
+    def get_youtube_embed_url(self, obj):
+        return obj.youtube_embed_url()
+
+    def get_cover_image_url(self, obj):
+        try:
+            if obj.cover_image and hasattr(obj.cover_image, 'url'):
+                return obj.cover_image.url
+        except Exception:
+            return None
+        return None

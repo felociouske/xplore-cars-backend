@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'cloudinary',
     'cloudinary_storage',
-    'markdownx',
+    'django_ckeditor_5',
     'api',
 ]
 
@@ -156,6 +156,31 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+}
+
+
+CKEDITOR_5_CONFIGS = {
+    # `django_ckeditor_5` expects config sets keyed by name. The widget
+    # defaults to the "default" config name, so provide one here.
+    'default': {
+        'toolbar': [
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'underline',
+            'link',
+            '|',
+            'bulletedList',
+            'numberedList',
+            '|',
+            'insertTable',
+            'imageUpload',
+            '|',
+            'undo',
+            'redo',
+        ]
+    }
 }
 
 # =====================

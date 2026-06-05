@@ -2,11 +2,11 @@ from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial
+from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial, BlogPost
 from .serializers import (
     CarSerializer, CarImageSerializer,
     CarEnquirySerializer, ContactEnquirySerializer,
-    TestimonialSerializer,
+    TestimonialSerializer, BlogPostSerializer
 )
 
 
@@ -64,4 +64,18 @@ class TestimonialViewSet(viewsets.ReadOnlyModelViewSet):
     def homepage_testimonials(self, request):
         testimonials = self.get_queryset().filter(show_on_homepage=True)
         serializer = self.get_serializer(testimonials, many=True)
+        return Response(serializer.data)
+
+
+class BlogPostViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = BlogPostSerializer
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        return BlogPost.objects.filter(is_published=True).order_by('-published_at', '-created_at')
+
+    @action(detail=False, methods=['get'], url_path='recent')
+    def recent_posts(self, request):
+        posts = self.get_queryset()[:3]
+        serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)

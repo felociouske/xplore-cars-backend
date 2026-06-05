@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial
+from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial, BlogPost
 from markdownx.admin import MarkdownxModelAdmin
 
 
@@ -86,6 +86,35 @@ class TestimonialAdmin(admin.ModelAdmin):
                 'show_on_homepage',
                 'display_order',
             )
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',),
+        }),
+    )
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(MarkdownxModelAdmin):
+    list_display = ('title', 'author', 'is_published', 'published_at', 'created_at')
+    list_filter = ('is_published',)
+    search_fields = ('title', 'subtitle', 'content')
+    readonly_fields = ('slug', 'youtube_id', 'created_at', 'updated_at')
+    list_editable = ('is_published',)
+
+    fieldsets = (
+        ('Post Identity', {
+            'fields': ('title', 'slug', 'subtitle', 'cover_image'),
+        }),
+        ('Content', {
+            'fields': ('content',),
+        }),
+        ('YouTube (Optional)', {
+            'fields': ('youtube_url', 'youtube_id'),
+            'description': 'Paste a YouTube link to attach a video to this post.',
+        }),
+        ('Publishing', {
+            'fields': ('author', 'is_published', 'published_at'),
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

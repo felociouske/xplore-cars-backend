@@ -8,5 +8,5 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/admin/', permanent=False)),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    path('markdownx/', include('markdownx.urls')),
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
 ]

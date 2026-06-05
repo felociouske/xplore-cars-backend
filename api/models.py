@@ -1,6 +1,6 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
-from markdownx.models import MarkdownxField
+from django_ckeditor_5.fields import CKEditor5Field
 from django.utils.text import slugify
 from urllib.parse import urlparse, parse_qs
 
@@ -55,7 +55,7 @@ class Car(models.Model):
         help_text="Comma-separated trim levels e.g. X, G, Moda, TRD Sportivo"
     )
     features = models.TextField(blank=True, null=True)
-    description = MarkdownxField(blank=True, null=True)
+    description = CKEditor5Field(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
  
     class Meta:
@@ -180,6 +180,63 @@ class Testimonial(models.Model):
             slug_candidate = base_slug
             counter = 1
             while Testimonial.objects.filter(slug=slug_candidate).exists():
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug_candidate
+
+        if self.youtube_url:
+            self.youtube_id = self.extract_youtube_id()
+
+        super().save(*args, **kwargs)
+
+    def youtube_embed_url(self):
+        return f"https://www.youtube.com/embed/{self.youtube_id}" if self.youtube_id else None
+
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    subtitle = models.CharField(max_length=300, blank=True, null=True)
+    cover_image = CloudinaryField('image', blank=True, null=True)
+    content = CKEditor5Field()
+    author = models.ForeignKey(
+        'auth.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='blog_posts',
+    )
+    youtube_url = models.URLField(blank=True, null=True, help_text="Optional: link a YouTube video to this post")
+    youtube_id = models.CharField(max_length=50, blank=True, null=True, editable=False)
+    is_published = models.BooleanField(default=False)
+    published_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-published_at', '-created_at']
+        verbose_name = "Blog Post"
+        verbose_name_plural = "Blog Posts"
+
+    def __str__(self):
+        return self.title
+
+    def extract_youtube_id(self):
+        if not self.youtube_url:
+            return None
+        parsed = urlparse(self.youtube_url)
+        if 'youtube' in parsed.netloc:
+            return parse_qs(parsed.query).get('v', [None])[0]
+        elif 'youtu.be' in parsed.netloc:
+            return parsed.path.strip('/')
+        return None
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title) or "post"
+            slug_candidate = base_slug
+            counter = 1
+            while BlogPost.objects.filter(slug=slug_candidate).exists():
                 slug_candidate = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug_candidate
