@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial, BlogPost
-from markdownx.admin import MarkdownxModelAdmin
 
 
 class CarImageInline(admin.TabularInline):
@@ -9,18 +8,21 @@ class CarImageInline(admin.TabularInline):
 
 
 @admin.register(Car)
-class CarAdmin(MarkdownxModelAdmin):
-    list_display = ('name', 'body_type', 'price_from', 'price_to', 'created_at')
-    search_fields = ('name',)
-    list_filter = ('body_type', 'import_type')
+class CarAdmin(admin.ModelAdmin):
+    list_display = ('name', 'make', 'model', 'year', 'category', 'body_type', 'price_from', 'price_to', 'created_at')
+    search_fields = ('name', 'make', 'model')
+    list_filter = ('category', 'body_type', 'import_type', 'make')
     inlines = [CarImageInline]
 
     fieldsets = (
         ('Identity', {
             'fields': (
+                ('make', 'model', 'year'),
                 'name',
-                ('body_type', 'import_type', 'drive_side'),
-            )
+                ('body_type', 'import_type'),
+                'category',
+            ),
+            'description': 'Name is auto-filled from Make + Model + Year if left blank.'
         }),
         ('Trim & Variants', {
             'fields': ('trim_levels',),
@@ -34,7 +36,6 @@ class CarAdmin(MarkdownxModelAdmin):
             'fields': ('features', 'description'),
         }),
     )
-
 
 @admin.register(CarEnquiry)
 class CarEnquiryAdmin(admin.ModelAdmin):
@@ -95,7 +96,7 @@ class TestimonialAdmin(admin.ModelAdmin):
 
 
 @admin.register(BlogPost)
-class BlogPostAdmin(MarkdownxModelAdmin):
+class BlogPostAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'is_published', 'published_at', 'created_at')
     list_filter = ('is_published',)
     search_fields = ('title', 'subtitle', 'content')

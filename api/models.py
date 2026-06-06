@@ -41,15 +41,25 @@ class Car(models.Model):
         ('lhd', 'Left Hand Drive'),
     ]
 
-    # Price range — use price_from as the base, price_to as upper limit
+    CATEGORY_CHOICES = [
+        ('available_to_import', 'Available to Import'),
+        ('successful_import', 'Successful Import'),
+        ('popular_in_kenya', 'Popular in Kenya'),
+    ]
+
+    # Price range
     price_from = models.DecimalField(max_digits=10, decimal_places=2)
     price_to = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
-    # Optional
-    name = models.CharField(max_length=100, blank=True, null=True)
+    # Core identity
+    make = models.CharField(max_length=100, blank=True, null=True, help_text="e.g. Toyota, Nissan, Mazda")
+    model = models.CharField(max_length=100, blank=True, null=True, help_text="e.g. Prado, Note, Demio")
+    year = models.PositiveIntegerField(blank=True, null=True, help_text="e.g. 2019")
+    name = models.CharField(max_length=100, blank=True, null=True, help_text="Auto-filled if left blank")
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default='available_to_import')
+
     body_type = models.CharField(max_length=20, choices=BODY_TYPE_CHOICES, blank=True, null=True)
     import_type = models.CharField(max_length=20, choices=IMPORT_TYPE_CHOICES, default='japan_import')
-    drive_side = models.CharField(max_length=3, choices=DRIVE_CHOICES, default='rhd')
     trim_levels = models.CharField(
         max_length=255, blank=True, null=True,
         help_text="Comma-separated trim levels e.g. X, G, Moda, TRD Sportivo"
@@ -63,7 +73,12 @@ class Car(models.Model):
         verbose_name_plural = "Cars"
         ordering = ['-created_at']
  
- 
+    def save(self, *args, **kwargs):
+        if not self.name and (self.make or self.model):
+            parts = [p for p in [self.make, self.model, str(self.year) if self.year else None] if p]
+            self.name = " ".join(parts)
+        super().save(*args, **kwargs)
+
     def price_display(self):
         """Returns formatted price range string e.g. KES 954,000 - 1,500,000"""
         base = f"KES {int(self.price_from):,}"

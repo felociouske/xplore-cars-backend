@@ -26,10 +26,11 @@ class CarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
         fields = [
-            'id', 'name', 'price_from', 'price_to', 'price_display',
+            'id', 'name', 'make', 'model', 'year', 'category',
+            'price_from', 'price_to', 'price_display',
             'description', 'features', 'created_at',
-            'images', 'body_type', 'import_type', 'drive_side', 'trim_levels',
-            'trim_levels_list',
+            'images', 'body_type', 'import_type',
+            'trim_levels', 'trim_levels_list',
         ]
 
     def get_price_display(self, obj):
