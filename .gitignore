@@ -12,3 +12,5 @@ __pycache__/
 # Virtual environment
 venv/
 .gitignore
+api.zip
+core.zip
