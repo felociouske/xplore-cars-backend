@@ -48,7 +48,7 @@ class Car(models.Model):
     ]
 
     # Price range
-    price_from = models.DecimalField(max_digits=10, decimal_places=2)
+    price_from = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     price_to = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     # Core identity
@@ -81,6 +81,8 @@ class Car(models.Model):
 
     def price_display(self):
         """Returns formatted price range string e.g. KES 954,000 - 1,500,000"""
+        if not self.price_from:
+            return ""
         base = f"KES {int(self.price_from):,}"
         if self.price_to:
             return f"{base} - {int(self.price_to):,}"

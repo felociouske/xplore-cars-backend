@@ -9,17 +9,4 @@ class Migration(migrations.Migration):
         ('api', '0025_remove_car_color_remove_car_engine_type_and_more'),
     ]
 
-    operations = [
-        migrations.RemoveField(
-            model_name='car',
-            name='make',
-        ),
-        migrations.RemoveField(
-            model_name='car',
-            name='model',
-        ),
-        migrations.RemoveField(
-            model_name='car',
-            name='year',
-        ),
-    ]
+    operations = []

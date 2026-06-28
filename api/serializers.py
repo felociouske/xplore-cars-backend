@@ -22,13 +22,14 @@ class CarSerializer(serializers.ModelSerializer):
     images = CarImageSerializer(many=True, read_only=True)
     price_display = serializers.SerializerMethodField()
     trim_levels_list = serializers.SerializerMethodField()
+    features_list = serializers.SerializerMethodField()
 
     class Meta:
         model = Car
         fields = [
             'id', 'name', 'make', 'model', 'year', 'category',
             'price_from', 'price_to', 'price_display',
-            'description', 'features', 'created_at',
+            'description', 'features', 'features_list', 'created_at',
             'images', 'body_type', 'import_type',
             'trim_levels', 'trim_levels_list',
         ]
@@ -40,6 +41,11 @@ class CarSerializer(serializers.ModelSerializer):
         if not obj.trim_levels:
             return []
         return [t.strip() for t in obj.trim_levels.split(',') if t.strip()]
+
+    def get_features_list(self, obj):
+        if not obj.features:
+            return []
+        return [f.strip() for f in obj.features.split('\n') if f.strip()]
 
 
 class CarEnquirySerializer(serializers.ModelSerializer):

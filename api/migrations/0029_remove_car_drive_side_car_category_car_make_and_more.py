@@ -19,17 +19,17 @@ class Migration(migrations.Migration):
             name='category',
             field=models.CharField(choices=[('available_to_import', 'Available to Import'), ('successful_import', 'Successful Import'), ('popular_in_kenya', 'Popular in Kenya')], default='available_to_import', max_length=30),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='car',
             name='make',
             field=models.CharField(blank=True, help_text='e.g. Toyota, Nissan, Mazda', max_length=100, null=True),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='car',
             name='model',
             field=models.CharField(blank=True, help_text='e.g. Prado, Note, Demio', max_length=100, null=True),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='car',
             name='year',
             field=models.PositiveIntegerField(blank=True, help_text='e.g. 2019', null=True),
