@@ -32,6 +32,7 @@ class CarSerializer(serializers.ModelSerializer):
             'description', 'features', 'features_list', 'created_at',
             'images', 'body_type', 'import_type',
             'trim_levels', 'trim_levels_list',
+            'youtube_video_1', 'youtube_video_2',  # NEW
         ]
 
     def get_price_display(self, obj):

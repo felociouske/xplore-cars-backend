@@ -58,6 +58,21 @@ class Car(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True, help_text="Auto-filled if left blank")
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default='available_to_import')
 
+    youtube_video_1 = models.URLField(
+        max_length=500, blank=True, null=True,
+        help_text="YouTube video URL e.g. https://www.youtube.com/watch?v=xxxx"
+    )
+    youtube_video_2 = models.URLField(
+        max_length=500, blank=True, null=True,
+        help_text="Second YouTube video URL (optional)"
+    )
+    youtube_video_1 = models.URLField(max_length=500, blank=True, null=True)
+    youtube_video_1_title = models.CharField(max_length=200, blank=True, null=True,
+        help_text="e.g. Review after arrival")
+    youtube_video_2 = models.URLField(max_length=500, blank=True, null=True)
+    youtube_video_2_title = models.CharField(max_length=200, blank=True, null=True,
+        help_text="e.g. Receiving the car")
+        
     body_type = models.CharField(max_length=20, choices=BODY_TYPE_CHOICES, blank=True, null=True)
     import_type = models.CharField(max_length=20, choices=IMPORT_TYPE_CHOICES, default='japan_import')
     trim_levels = models.CharField(

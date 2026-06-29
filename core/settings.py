@@ -24,7 +24,7 @@ if RAILWAY_STATIC_URL:
 # INSTALLED APPS
 # =====================
 INSTALLED_APPS = [
-    # 'jazzmin',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

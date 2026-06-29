@@ -2,21 +2,6 @@ from django.contrib import admin
 from .models import Car, CarImage, CarEnquiry, ContactEnquiry, Testimonial, BlogPost
 
 
-# ─────────────────────────────────────────────────────────────
-#  HOW TO SET UP GROUPS:
-#  1. Admin → Authentication → Groups → Add group
-#  2. Assign permissions listed below each class
-#  3. Admin → Users → pick user → assign group
-#  4. User must have: is_staff=True, is_superuser=False
-# ─────────────────────────────────────────────────────────────
-
-
-# ─────────────────────────────────────────────────────────────
-#  CARS
-#  Give group: api | car | can view/add/change/delete car
-#              api | car image | can view/add/change/delete car image
-# ─────────────────────────────────────────────────────────────
-
 class CarImageInline(admin.TabularInline):
     model = CarImage
     extra = 1
@@ -59,15 +44,15 @@ class CarAdmin(admin.ModelAdmin):
         ("Content", {
             "fields": ("features", "description"),
         }),
+        ("YouTube Videos", {
+            "fields": (
+                ("youtube_video_1", "youtube_video_1_title"),
+                ("youtube_video_2", "youtube_video_2_title"),
+            ),
+            "description": "Paste full YouTube URLs and add a title for each video. Leave blank if not needed.",
+        }),
     )
 
-
-# ─────────────────────────────────────────────────────────────
-#  CAR ENQUIRIES
-#  Give group: api | car enquiry | can view car enquiry
-#              api | car enquiry | can change car enquiry
-#  Do NOT give add or delete to Sales Team
-# ─────────────────────────────────────────────────────────────
 
 @admin.register(CarEnquiry)
 class CarEnquiryAdmin(admin.ModelAdmin):
@@ -83,12 +68,6 @@ class CarEnquiryAdmin(admin.ModelAdmin):
         return request.user.is_superuser
 
 
-# ─────────────────────────────────────────────────────────────
-#  CONTACT ENQUIRIES
-#  Give group: api | contact enquiry | can view contact enquiry
-#              api | contact enquiry | can change contact enquiry
-# ─────────────────────────────────────────────────────────────
-
 @admin.register(ContactEnquiry)
 class ContactEnquiryAdmin(admin.ModelAdmin):
     list_display = ("full_name", "subject_type", "subject", "email", "phone", "created_at")
@@ -102,11 +81,6 @@ class ContactEnquiryAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser
 
-
-# ─────────────────────────────────────────────────────────────
-#  TESTIMONIALS
-#  Give group: api | testimonial | can view/add/change/delete
-# ─────────────────────────────────────────────────────────────
 
 @admin.register(Testimonial)
 class TestimonialAdmin(admin.ModelAdmin):
@@ -149,11 +123,6 @@ class TestimonialAdmin(admin.ModelAdmin):
         }),
     )
 
-
-# ─────────────────────────────────────────────────────────────
-#  BLOG POSTS
-#  Give group: api | blog post | can view/add/change/delete
-# ─────────────────────────────────────────────────────────────
 
 @admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
