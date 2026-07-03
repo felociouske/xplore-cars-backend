@@ -13,6 +13,7 @@ from .serializers import (
 class CarViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Car.objects.all().order_by('-created_at')
     serializer_class = CarSerializer
+    pagination_class = None
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['body_type', 'import_type']
     search_fields = ['name', 'description', 'features', 'body_type', 'import_type']
