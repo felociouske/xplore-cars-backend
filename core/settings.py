@@ -86,6 +86,20 @@ DATABASES = {
 }
 
 # =====================
+# FILE STORAGE (Django 5.1+ style — DEFAULT_FILE_STORAGE /
+# STATICFILES_STORAGE are ignored as of 5.1, this STORAGES dict
+# is the only thing Django actually reads now)
+# =====================
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+# =====================
 # PASSWORD VALIDATION
 # =====================
 AUTH_PASSWORD_VALIDATORS = [
@@ -104,12 +118,15 @@ USE_I18N = True
 USE_TZ = True
 
 # =====================
-# STATIC FILES
+# STATIC & MEDIA FILES
 # =====================
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Not actually used for serving (Cloudinary generates its own full URLs),
+# but some Django internals / third-party packages expect MEDIA_URL to exist.
+MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -143,7 +160,6 @@ CLOUDINARY_STORAGE = {
     'API_KEY': config('CLOUDINARY_API_KEY'),
     'API_SECRET': config('CLOUDINARY_API_SECRET'),
 }
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # =====================
 # REST FRAMEWORK
@@ -158,30 +174,51 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
+CK_EDITOR_5_UPLOAD_FILE_VIEW_NAME = "custom_ckeditor5_upload"
 
+# =====================
+# CKEDITOR 5
+# =====================
 CKEDITOR_5_CONFIGS = {
-    # `django_ckeditor_5` expects config sets keyed by name. The widget
-    # defaults to the "default" config name, so provide one here.
     'default': {
         'toolbar': [
-            'heading',
-            '|',
-            'bold',
-            'italic',
-            'underline',
-            'link',
-            '|',
-            'bulletedList',
-            'numberedList',
-            '|',
-            'insertTable',
-            'imageUpload',
-            '|',
-            'undo',
-            'redo',
-        ]
+            'heading', '|',
+            'bold', 'italic', 'underline', 'link', '|',
+            'bulletedList', 'numberedList', '|',
+            'alignment', '|',
+            'insertTable', 'imageUpload', '|',
+            'undo', 'redo',
+        ],
+        'image': {
+            'toolbar': [
+                'imageTextAlternative',
+                '|',
+                'imageStyle:alignLeft',
+                'imageStyle:alignCenter',
+                'imageStyle:alignRight',
+                'imageStyle:side',
+                'imageStyle:full',
+                '|',
+                'imageResize',
+            ],
+            'styles': ['full', 'side', 'alignLeft', 'alignCenter', 'alignRight'],
+        },
+        'table': {
+            'contentToolbar': [
+                'tableColumn', 'tableRow', 'mergeTableCells',
+            ],
+        },
+        'alignment': {
+            'options': ['left', 'center', 'right', 'justify'],
+        },
     }
 }
+
+# Explicitly pin the storage backend django-ckeditor-5's own upload view
+# uses. Some versions resolve storage independently of Django's global
+# STORAGES["default"], so this removes any ambiguity and guarantees
+# pasted/uploaded images go to Cloudinary, not local disk.
+CKEDITOR_5_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # =====================
 # JAZZMIN ADMIN THEME
