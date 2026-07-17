@@ -48,8 +48,10 @@ class CarAdmin(admin.ModelAdmin):
             "fields": (
                 ("youtube_video_1", "youtube_video_1_title"),
                 ("youtube_video_2", "youtube_video_2_title"),
+                ("youtube_video_3", "youtube_video_3_title"),
+                ("youtube_video_4", "youtube_video_4_title"),
             ),
-            "description": "Paste full YouTube URLs and add a title for each video. Leave blank if not needed.",
+            "description": "Paste up to 4 YouTube URLs and add an optional title for each. Leave any slot blank if not needed.",
         }),
     )
 
