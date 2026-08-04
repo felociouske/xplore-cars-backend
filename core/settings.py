@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'django_ckeditor_5',
     'api',
+    'car_tax',
 ]
 
 # =====================

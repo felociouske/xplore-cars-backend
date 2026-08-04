@@ -9,5 +9,6 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/admin/', permanent=False)),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path("api/car-tax/", include("car_tax.urls")),
     path("ckeditor5/image_upload/", upload_file_fixed, name="custom_ckeditor5_upload"),
 ]
